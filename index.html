@@ -35,7 +35,8 @@ html,body{margin:0;padding:0;background:#0b1020;color:#e6ecf5;
   <div class="card">
     <div class="label">当前外网地址</div>
     <div id="addr">读取中…</div>
-    <a id="go" class="btn" href="#" style="display:none">打开</a>
+    <a id="go" class="btn" href="#" style="display:none">打开全部服务 →</a>
+    <a id="gochat" class="btn2" href="#" style="display:none">只打开模型对话</a>
     <button id="cp" class="btn2" style="display:none">复制地址</button>
     <div id="tip" class="tip"></div>
   </div>
@@ -49,10 +50,11 @@ html,body{margin:0;padding:0;background:#0b1020;color:#e6ecf5;
 
 <script>
 (function(){
-  var addr = document.getElementById('addr');
-  var go   = document.getElementById('go');
-  var cp   = document.getElementById('cp');
-  var tip  = document.getElementById('tip');
+  var addr  = document.getElementById('addr');
+  var go    = document.getElementById('go');
+  var gochat= document.getElementById('gochat');
+  var cp    = document.getElementById('cp');
+  var tip   = document.getElementById('tip');
 
   fetch('./url.txt?t=' + Date.now(), {cache:'no-store'})
     .then(function(r){ if(!r.ok) throw new Error('http ' + r.status); return r.text(); })
@@ -60,8 +62,10 @@ html,body{margin:0;padding:0;background:#0b1020;color:#e6ecf5;
       var u = (t || '').trim();
       if(!u || u.indexOf('http') !== 0) throw new Error('empty');
       addr.textContent = u;
-      go.href = u;
+      go.href     = u + '/nav';      // 全部服务
+      gochat.href = u + '/';         // 只有聊天
       go.style.display = 'block';
+      gochat.style.display = 'block';
       cp.style.display = 'block';
       cp.onclick = function(){
         var done = function(){ cp.textContent = '已复制'; setTimeout(function(){ cp.textContent = '复制地址'; }, 1500); };
