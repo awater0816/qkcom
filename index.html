@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>QKCOM · 入口</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:#0b1020;color:#e6ecf5;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:48px 20px calc(48px + env(safe-area-inset-bottom))}
+.logo{font-size:26px;font-weight:700;letter-spacing:2px;color:#7fb2ff}
+.sub{font-size:13px;color:#7b8aa3;margin-top:6px;letter-spacing:.5px}
+.card{margin-top:28px;background:#131a2c;border:1px solid #1f2a44;border-radius:16px;padding:20px}
+.label{font-size:12px;color:#7b8aa3;letter-spacing:.5px}
+#addr{margin-top:10px;font-size:17px;line-height:1.5;word-break:break-all;color:#6fd3a0;font-weight:600;min-height:26px}
+.btn{display:block;margin-top:18px;padding:15px 0;text-align:center;background:#2563eb;color:#fff;
+  border-radius:12px;text-decoration:none;font-size:16px;font-weight:600}
+.btn:active{background:#1d4ed8}
+.btn2{display:block;width:100%;margin-top:10px;padding:13px 0;background:#1b2438;color:#c7d3e6;
+  border:1px solid #2a3550;border-radius:12px;font-size:15px;font-family:inherit;cursor:pointer}
+.btn2:active{background:#22304a}
+.tip{margin-top:14px;font-size:13px;color:#f0a35e;line-height:1.6}
+.note{margin-top:24px;font-size:12px;color:#5c6b85;line-height:1.7}
+.note b{color:#8fa3c0;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">QKCOM</div>
+  <div class="sub">你的服务器 · 永久入口</div>
+
+  <div class="card">
+    <div class="label">当前外网地址</div>
+    <div id="addr">读取中…</div>
+    <a id="go" class="btn" href="#" style="display:none">打开</a>
+    <button id="cp" class="btn2" style="display:none">复制地址</button>
+    <div id="tip" class="tip"></div>
+  </div>
+
+  <div class="note">
+    <b>这个页面地址永远不变。</b>服务器重启后外网地址会换一个，刷新本页就是最新的。<br>
+    打开后要输一次密码：<b>qkcom</b> / <b>Qkcom@Home2026</b><br>
+    建议把本页加到手机主屏幕，以后点图标直接进。
+  </div>
+</div>
+
+<script>
+(function(){
+  var addr = document.getElementById('addr');
+  var go   = document.getElementById('go');
+  var cp   = document.getElementById('cp');
+  var tip  = document.getElementById('tip');
+
+  fetch('./url.txt?t=' + Date.now(), {cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('http ' + r.status); return r.text(); })
+    .then(function(t){
+      var u = (t || '').trim();
+      if(!u || u.indexOf('http') !== 0) throw new Error('empty');
+      addr.textContent = u;
+      go.href = u;
+      go.style.display = 'block';
+      cp.style.display = 'block';
+      cp.onclick = function(){
+        var done = function(){ cp.textContent = '已复制'; setTimeout(function(){ cp.textContent = '复制地址'; }, 1500); };
+        if(navigator.clipboard && window.isSecureContext){
+          navigator.clipboard.writeText(u).then(done, done);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = u; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch(e) {}
+          document.body.removeChild(ta); done();
+        }
+      };
+    })
+    .catch(function(){
+      addr.textContent = '暂时读不到';
+      tip.textContent = '服务器可能关机了，或地址正在更新。等一两分钟刷新本页。';
+    });
+})();
+</script>
+</body>
+</html>
